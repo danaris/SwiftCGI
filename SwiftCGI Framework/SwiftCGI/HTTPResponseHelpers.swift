@@ -55,7 +55,7 @@ public struct HTTPResponse {
     
     public var contentLength: Int { return count(body.utf8) }
     public var headerString: String {
-        let httpStart = "HTTP/1.1 \(status.rawValue) \(status.description)"
+        let httpStart = "Status: \(status.rawValue) \(status.description)"
         
         let httpHeaderString = HTTPNewline.join(map(headers, { header in "\(header.key): \(header.serializedValue)" }))
         return HTTPNewline.join([httpStart, httpHeaderString]) + HTTPTerminator
