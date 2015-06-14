@@ -158,8 +158,11 @@ class RecordTests: XCTestCase {
         // data_string = struct.pack('!%s' % ('I' * len(words)), *[int(x, 16) for x in words])  // pack the parsed chunks into a string
         // print base64.b64decode(data_string)
         let data = NSData(base64EncodedString: "DwxTQ1JJUFRfRklMRU5BTUUvc2NyaXB0cy9jZ2kMAFFVRVJZX1NUUklORw4DUkVRVUVTVF9NRVRIT0RHRVQMAENPTlRFTlRfVFlQRQ4AQ09OVEVOVF9MRU5HVEgLBFNDUklQVF9OQU1FL2NnaQsEUkVRVUVTVF9VUkkvY2dpDARET0NVTUVOVF9VUkkvY2dpDSJET0NVTUVOVF9ST09UL3Vzci9sb2NhbC9DZWxsYXIvbmdpbngvMS42LjIvaHRtbA8IU0VSVkVSX1BST1RPQ09MSFRUUC8xLjERB0dBVEVXQVlfSU5URVJGQUNFQ0dJLzEuMQ8LU0VSVkVSX1NPRlRXQVJFbmdpbngvMS42LjILCVJFTU9URV9BRERSMTI3LjAuMC4xCwVSRU1PVEVfUE9SVDU3MTk4CwlTRVJWRVJfQUREUjEyNy4wLjAuMQsEU0VSVkVSX1BPUlQ4MDgwCwlTRVJWRVJfTkFNRWxvY2FsaG9zdA8DUkVESVJFQ1RfU1RBVFVTMjAwCQ5IVFRQX0hPU1Rsb2NhbGhvc3Q6ODA4MAsISFRUUF9QUkFHTUFuby1jYWNoZQsuSFRUUF9DT09LSUVzZXNzaW9uaWQ9ODQwNUY4NUUtOTQ5Ni00NUEwLUE3MjQtREI5RDkzMDEwN0Q0DwpIVFRQX0NPTk5FQ1RJT05rZWVwLWFsaXZlCz9IVFRQX0FDQ0VQVHRleHQvaHRtbCxhcHBsaWNhdGlvbi94aHRtbCt4bWwsYXBwbGljYXRpb24veG1sO3E9MC45LCovKjtxPTAuOA92SFRUUF9VU0VSX0FHRU5UTW96aWxsYS81LjAgKE1hY2ludG9zaDsgSW50ZWwgTWFjIE9TIFggMTBfMTBfMikgQXBwbGVXZWJLaXQvNjAwLjMuMTggKEtIVE1MLCBsaWtlIEdlY2tvKSBWZXJzaW9uLzguMC4zIFNhZmFyaS82MDAuMy4xOBQFSFRUUF9BQ0NFUFRfTEFOR1VBR0Vlbi11cxQNSFRUUF9BQ0NFUFRfRU5DT0RJTkdnemlwLCBkZWZsYXRlEglIVFRQX0NBQ0hFX0NPTlRST0xtYXgtYWdlPTAAAAAAAA==", options: .allZeros)!
-        let paddingLength = 5
-        let record = ParamsRecord(version: .Version1, requestID: 1, contentLength: 832 - paddingLength, paddingLength: FCGIPaddingLength(paddingLength))
+		let requestID : FCGIRequestID = 1
+		let paddingLengthInt : UInt16 = 5
+		let contentLength : FCGIContentLength = (832 as FCGIContentLength) - (paddingLengthInt as FCGIContentLength)
+		let paddingLength : FCGIPaddingLength = FCGIPaddingLength(paddingLengthInt)
+        let record = ParamsRecord(version: FCGIVersion.Version1, requestID: requestID, contentLength: contentLength, paddingLength: paddingLength)
         record.processContentData(data)
         
         let expectedResult = ["SERVER_ADDR": "127.0.0.1",

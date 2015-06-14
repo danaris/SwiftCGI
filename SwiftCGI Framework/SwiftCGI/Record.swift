@@ -60,8 +60,9 @@ class FCGIRecord {
         var bytes = [UInt8](count: 8, repeatedValue: 0)
         bytes[0] = version.rawValue
         bytes[1] = UInt8(type.rawValue)
-        
-        let (msb, lsb) = requestID.decomposeBigEndian()
+		
+		let requestIDUInt16 : UInt16 = requestID as UInt16
+        let (msb, lsb) = requestIDUInt16.decomposeBigEndian()
         bytes[2] = msb
         bytes[3] = lsb
         
@@ -122,11 +123,12 @@ class EndRequestRecord: FCGIRecord {
     }
     
     override var fcgiPacketData: NSData {
-        let result = super.fcgiPacketData.mutableCopy() as NSMutableData
+        let result = super.fcgiPacketData.mutableCopy() as! NSMutableData
         
         var extraBytes = [UInt8](count: 8, repeatedValue: 0)
-        
-        let (msb, b1, b2, lsb) = applicationStatus.decomposeBigEndian()
+		
+		let applicationStatusUInt32 : UInt32 = applicationStatus as UInt32
+        let (msb, b1, b2, lsb) = applicationStatusUInt32.decomposeBigEndian()
         extraBytes[0] = msb
         extraBytes[1] = b1
         extraBytes[2] = b2
@@ -161,7 +163,7 @@ class ByteStreamRecord: FCGIRecord {
     }
     
     override var fcgiPacketData: NSData {
-        let result = super.fcgiPacketData.mutableCopy() as NSMutableData
+        let result = super.fcgiPacketData.mutableCopy() as! NSMutableData
         if let data = _rawData {
             result.appendData(data)
         }
@@ -190,7 +192,7 @@ class ParamsRecord: FCGIRecord {
         var paramData: [String: String] = [:]
         
         //Remove Padding
-        let unpaddedData = data.subdataWithRange(NSMakeRange(0, Int(contentLength))).mutableCopy() as NSMutableData
+        let unpaddedData = data.subdataWithRange(NSMakeRange(0, Int(contentLength))).mutableCopy() as! NSMutableData
         while unpaddedData.length > 0 {
             var pos0 = 0, pos1 = 0, pos4 = 0
             
@@ -252,7 +254,7 @@ class ParamsRecord: FCGIRecord {
             unpaddedData.replaceBytesInRange(NSMakeRange(0,valueLength), withBytes: nil, length: 0)
             
             if key != nil && value != nil {
-                paramData[key!] = value!
+                paramData[key! as String] = value! as String
             } else {
                 fatalError("Unable to decode key or value from content")  // non-decodable value
             }

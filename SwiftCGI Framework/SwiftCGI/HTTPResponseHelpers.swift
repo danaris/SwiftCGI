@@ -53,7 +53,7 @@ public struct HTTPResponse {
     
     // MARK: Computed properties
     
-    public var contentLength: Int { return countElements(body.utf8) }
+    public var contentLength: Int { return count(body.utf8) }
     public var headerString: String {
         let httpStart = "HTTP/1.1 \(status.rawValue) \(status.description)"
         

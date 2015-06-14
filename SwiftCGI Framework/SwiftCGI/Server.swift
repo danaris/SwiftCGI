@@ -83,7 +83,7 @@ public class FCGIServer: NSObject, GCDAsyncSocketDelegate {
         // we have covered all cases
         switch record.type {
         case .BeginRequest:
-            let request = FCGIRequest(record: record as BeginRequestRecord)
+            let request = FCGIRequest(record: record as! BeginRequestRecord)
             request.socket = socket
             
             objc_sync_enter(currentRequests)
@@ -97,7 +97,7 @@ public class FCGIServer: NSObject, GCDAsyncSocketDelegate {
             objc_sync_exit(currentRequests)
             
             if let request = maybeRequest {
-                if let params = (record as ParamsRecord).params {
+                if let params = (record as! ParamsRecord).params {
                     if request._params == nil {
                         request._params = [:]
                     }
@@ -122,7 +122,7 @@ public class FCGIServer: NSObject, GCDAsyncSocketDelegate {
                     request.streamData = NSMutableData(capacity: 65536)
                 }
                 
-                if let recordData = (record as ByteStreamRecord).rawData {
+                if let recordData = (record as! ByteStreamRecord).rawData {
                     request.streamData!.appendData(recordData)
                 } else {
                     // TODO: Future - when Swift gets exception handling, wrap this
